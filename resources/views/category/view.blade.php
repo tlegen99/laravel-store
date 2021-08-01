@@ -3,8 +3,8 @@
 @section('title', 'Category title')
 
 @section('custom_css')
-	<link rel="stylesheet" type="text/css" href="styles/categories.css">
-	<link rel="stylesheet" type="text/css" href="styles/categories_responsive.css">
+	<link rel="stylesheet" type="text/css" href="/styles/categories.css">
+	<link rel="stylesheet" type="text/css" href="/styles/categories_responsive.css">
 @endsection
 
 @section('content')
@@ -12,7 +12,7 @@
 
 	<div class="home">
 		<div class="home_container">
-			<div class="home_background" style="background-image:url(images/{{$category->image}})"></div>
+			<div class="home_background" style="background-image:url(/images/{{$category->image}})"></div>
 			<div class="home_content_container">
 				<div class="container">
 					<div class="row">
@@ -83,7 +83,7 @@
 						@endphp
 						<!-- Product -->
 						<div class="product">
-							<div class="product_image"><img src="images/{{ $image }}" alt=""></div>
+							<div class="product_image"><img src="/images/{{ $image }}" alt=""></div>
 							<div class="product_content">
 								<div class="product_title"><a href="{{ route('view_product', ['category', $product->id]) }}">{{ $product->title }}</a></div>
 								@if($product->new_price != null)
@@ -96,14 +96,7 @@
 						</div>
 						@endforeach
 					</div>
-					<div class="product_pagination">
-						<ul>
-							<li class="active"><a href="#">01.</a></li>
-							<li><a href="#">02.</a></li>
-							<li><a href="#">03.</a></li>
-						</ul>
-					</div>
-						
+					{{$products->appends(request()->query())->links('pagination.view')}}						
 				</div>
 			</div>
 		</div>
@@ -118,7 +111,7 @@
 				<!-- Icon Box -->
 				<div class="col-lg-4 icon_box_col">
 					<div class="icon_box">
-						<div class="icon_box_image"><img src="images/icon_1.svg" alt=""></div>
+						<div class="icon_box_image"><img src="/images/icon_1.svg" alt=""></div>
 						<div class="icon_box_title">Free Shipping Worldwide</div>
 						<div class="icon_box_text">
 							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam a ultricies metus. Sed nec molestie.</p>
@@ -129,7 +122,7 @@
 				<!-- Icon Box -->
 				<div class="col-lg-4 icon_box_col">
 					<div class="icon_box">
-						<div class="icon_box_image"><img src="images/icon_2.svg" alt=""></div>
+						<div class="icon_box_image"><img src="/images/icon_2.svg" alt=""></div>
 						<div class="icon_box_title">Free Returns</div>
 						<div class="icon_box_text">
 							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam a ultricies metus. Sed nec molestie.</p>
@@ -140,7 +133,7 @@
 				<!-- Icon Box -->
 				<div class="col-lg-4 icon_box_col">
 					<div class="icon_box">
-						<div class="icon_box_image"><img src="images/icon_3.svg" alt=""></div>
+						<div class="icon_box_image"><img src="/images/icon_3.svg" alt=""></div>
 						<div class="icon_box_title">24h Fast Support</div>
 						<div class="icon_box_text">
 							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam a ultricies metus. Sed nec molestie.</p>
@@ -188,7 +181,8 @@
 					url: '{{route('view_category', $category->slug)}}',
 					type: "GET",
 					data: {
-						order_by: order_by
+						order_by: order_by,
+						page: {{ isset($_GET['page']) ? $_GET['page'] : 1 }}
 					},
 				    headers: {
 				        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -197,19 +191,26 @@
                         let positionParameters = location.pathname.indexOf('?');
                         let url = location.pathname.substring(positionParameters,location.pathname.length);
                         let newURL = url + '?'; // http://127.0.0.1:8001/phones?
-                        newURL += 'order_by=' + order_by; // http://127.0.0.1:8001/phones?order_by=name-z-a
+                        newURL += "page={{ isset($_GET['page']) ? $_GET['page'] : 1 }}" + '&order_by=' + order_by; // http://127.0.0.1:8001/phones?order_by=name-z-a
                         history.pushState({}, '', newURL);
 
-						$('.product_grid').css({
-							'display': 'flex',
-							'justify-content': 'space-between',
-							'flex-wrap': 'wrap'
-						});
 						$('.product_grid').html(data);
+
+                        $('.product_grid').isotope('destroy');
+                        $('.product_grid').imagesLoaded( function() {
+                            let grid = $('.product_grid').isotope({
+                                itemSelector: '.product',
+                                layoutMode: 'fitRows',
+                                fitRows:
+                                    {
+                                        gutter: 30
+                                    }
+                            });
+                        });
 					}
 				});
 			});
 		});
 	</script>
-	<script src="js/categories.js"></script>
+	<script src="/js/categories.js"></script>
 @endsection

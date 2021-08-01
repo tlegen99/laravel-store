@@ -19,16 +19,19 @@ class ProductController extends Controller
 
     public function viewCategory(Request $request,$slug)
     {
+        $paginate = 2;
+
         $category = Category::where('slug', $slug)->first();
 
-        $products = Product::where('category_id', $category->id)->get();
+        $products = Product::where('category_id', $category->id)->paginate($paginate);
+
+        $exp = explode('_', $request->order_by);
 
         if (isset($request->order_by)) {
-            $exp = explode('_', $request->order_by);
             if ($request->order_by == 'sort_default') {
-                $products = Product::where('category_id', $category->id)->get();
+                $products = Product::where('category_id', $category->id)->paginate($paginate);
             }else{
-                $products = Product::where('category_id', $category->id)->orderBy($exp[0], $exp[1])->get();
+                $products = Product::where('category_id', $category->id)->orderBy($exp[0], $exp[1])->paginate($paginate);
             }
         }
 

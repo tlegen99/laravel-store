@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/{category}/{product_id}', 'ProductController@view')->name('view_product');
-Route::get('/{category}', 'ProductController@viewCategory')->name('view_category');
+Route::get('/store/{category}/{product_id}', 'ProductController@view')->name('view_product');
+Route::get('/store/{category}', 'ProductController@viewCategory')->name('view_category');
 
-Route::get('/', 'HomeController@index');
+Route::get('/cart', 'CartController@viewCart')->name('view_cart');
+
+Route::get('/', 'HomeController@index')->name('home');
